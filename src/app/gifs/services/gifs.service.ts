@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 })
 export class GifsService {
   private _historial: string[] = [];
-
+  private serviceUrl: string = 'https://api.giphy.com/v1/gifs';
   public results: Gif[] = [];
 
   constructor(private http: HttpClient) {
@@ -32,10 +32,13 @@ export class GifsService {
       localStorage.setItem('historial', JSON.stringify(this._historial));
     }
 
+    const params = new HttpParams()
+      .set('apiKey', environment.apikey)
+      .set('limit', '20')
+      .set('q', query);
+
     this.http
-      .get<SearchGifsResponse>(
-        `https://api.giphy.com/v1/gifs/search?api_key=fVNubcmEGa4CE1pMMeFwkmNamjs6EH6J&q=${query}&limit=20`
-      )
+      .get<SearchGifsResponse>(`${this.serviceUrl}/search`, { params })
       .subscribe((response) => {
         console.log(response.data);
         this.results = response.data;
